@@ -71,6 +71,72 @@
 
 **Known Limitation:** Docker daemon unavailable during review — runtime build verification deferred to deployment.
 
+### 4. Frontend Architecture: Single-Container SPA with Static Assets (2026-08-19)
+
+**Status:** Accepted (implementation complete; integration approved 2026-08-19)
+**Author:** Keaton (Lead)
+**Participants:** Keaton (design, docs), Kujan (asset development), Fenster (backend wiring), Hockney (integration testing)
+
+**Summary:** Responsive, accessible web UI for fraud alert CRUD, served as static assets from the same FastAPI container. No Node build pipeline, no second service, no new runtime dependencies. Plain HTML + CSS + ES-module vanilla JavaScript (11 files), committed as source and copied by the existing `COPY app/ ./app/` Dockerfile rule.
+
+**Architecture:**
+- **Stack:** HTML5, CSS3, ES6 modules (no framework, no bundler)
+- **Routing:** Hash-based client-side routing (fragments never sent to server; no catch-all rewrite needed)
+- **State:** Single module-level state object; render as pure function per view
+- **API client:** Centralized `api.js` wrapper around `fetch`, all paths relative (works behind any host/prefix)
+- **Forms:** Structured form + JSON editor tab, synced through a single draft object. Edit uses full PUT; no PATCH local merge.
+- **Accessibility:** Semantic landmarks, labels, focus management, ARIA states, keyboard-only navigation supported
+- **Responsiveness:** Mobile-first CSS Grid, 375px–1440px tested; `prefers-color-scheme` + `prefers-reduced-motion` respected
+- **Security:** No `innerHTML` with data, no inline scripts, restrictive CSP `<meta>`, no third-party origins, no CDN
+
+**Mount Strategy:**
+| Path | Owner | Notes |
+|------|-------|-------|
+| `/api/v1/fraud-alerts*` | existing | untouched |
+| `/` | Fenster route | `FileResponse(index.html)` |
+| `/static/*` | Fenster mount | `StaticFiles` (css, js, images) |
+| `/health` | existing | untouched |
+| `/docs`, `/openapi.json` | FastAPI | `include_in_schema=False` for new routes |
+
+**File Boundaries (no cross-editing):**
+- **Kujan:** `app/static/` directory — all asset files (11 files)
+- **Fenster:** `app/main.py` only — routing, mounts, asset resolution
+- **Hockney:** `tests/test_frontend.py` — integration tests (new file)
+- **Keaton:** Docs verification — no new deps, no image size change beyond assets
+
+**Acceptance Criteria (20-point gate):**
+1. `GET /` → 200 HTML
+2. `GET /static/css/styles.css` → 200 CSS
+3. `GET /static/js/main.js` → 200 JavaScript
+4. `/health`, `/docs`, `/openapi.json` unchanged
+5. All 87 `/api/v1/fraud-alerts` tests pass unmodified
+6. `GET /api/v1/fraud-alerts/missing` → 404 JSON (not HTML catch-all)
+7. Path traversal blocked
+8. Asset resolution works from repo root and alternate CWD
+9. Dashboard, list, detail, create, edit, delete all work end-to-end
+10. Create round-trip with README example succeeds; edit strips server fields
+11. All `FraudAlertCreate` fields reachable in structured form
+12. JSON tab ↔ structured tab round-trips without data loss
+13. Loading, empty, error, 404, success states demonstrably reachable
+14. Delete confirmation modal with focus trap; Esc cancels
+15. Full keyboard walkthrough succeeds
+16. No `innerHTML` with data, no `eval`, no inline handlers
+17. No network request to external origins
+18. Usable at 375px and 1440px without horizontal scroll
+19. `ruff check .` clean
+20. Image builds; `app/static/index.html` present inside
+
+**Supersedes:** nothing. **Depends on:** Decision #3 (API Contract), #1b (Schema), #2 (Container)
+
+**Files:** `app/static/` (11 asset files), `app/main.py` (routing edits only), `tests/test_frontend.py` (new)
+
+**Implementation Cycle:**
+- **14:53:00** Keaton — Design & documentation (this decision, acceptance criteria)
+- **15:00:00** Kujan — Asset development (11 files: HTML shell, CSS, JS modules for routing, state, API, views, DOM safety)
+- **15:08:00** Fenster — Backend wiring (`/` route, `/static` mount, module-relative path resolution)
+- **15:12:00** Hockney — Integration testing (20 acceptance criteria, 136 tests total with API suite; 1 expected skip due missing `build` module)
+- **15:25:00** Hockney — APPROVED (all integration gates passed; wheel verified with `pip wheel`, live HTTP smoke tests)
+
 ## Governance
 
 - All meaningful changes require team consensus
