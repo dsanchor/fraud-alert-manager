@@ -12,6 +12,8 @@ Fraud Alert CRUD service: FastAPI + Pydantic + in-memory storage. User's nested 
 
 ## Recent Updates
 
+📌 **2026-08-19 — Schema normalization cycle:** McManus normalized transaction schema per user instruction — renamed `OriginalTransaction` → `TransactionInformation`, renamed field `original_transaction` → `transaction_information`, removed nested `transaction_id` (8 fields remain). Keaton updated README with new field names. Hockney updated fixture/tests (87/87 passing, ruff clean, wheel succeeds) and approved. Scribe merged decision inbox, updated decisions.md with supersession note, wrote orchestration log, updated history.
+
 📌 **2026-08-19 — Schema extension + build fix cycle:** McManus added transaction_id and OriginalTransaction to schema. Fenster diagnosed and fixed Hatchling package discovery issue in GitHub Actions build. Keaton updated README and .gitignore for packaging outputs. Hockney updated fixtures/tests (87/87 passing, ruff clean) and approved integrated result. Scribe merged decision inbox, wrote 5 orchestration logs, and coordinated session documentation.
 
 📌 **2026-08-19 — Docker containerization cycle:** Keaton implemented Dockerfile + workflow for GHCR. Hockney detected .dockerignore issue (README.md excluded but required). McManus fixed .dockerignore with `!README.md` exception. Hockney approved. Scribe wrote 4 orchestration logs (Keaton initial, Hockney rejection, McManus fix, Hockney approval).

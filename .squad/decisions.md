@@ -4,10 +4,23 @@
 
 ### 1. Schema Extension: transaction_id + original_transaction (2026-08-19)
 
-**Status:** Implemented
+**Status:** Superseded (2026-08-19 — normalized schema)
 **Author:** McManus (Data Engineer)
 **Summary:** Added two new client-owned top-level fields: `transaction_id` (string) and `original_transaction` (nested object with 9 fields: transaction_id, originator_name, origin_account, bank_origin, beneficiary_name, destination_account, bank_destination, amount, currency). Bank/account identifiers preserve leading zeroes as strings. `OriginalTransaction` uses `extra="forbid"`. No constraint enforced that `FraudAlertCreate.transaction_id` must equal `original_transaction.transaction_id`. Fields exposed as optional in `FraudAlertUpdate` (shallow PATCH semantics).
 **Files:** `app/models.py`, `app/repository.py`
+
+**Supersession Note (2026-08-19):** This decision has been superseded by decision #1b (Schema Normalization: transaction_information). The field `original_transaction` was renamed to `transaction_information` and the nested `transaction_id` field was removed. The root-level `transaction_id` remains as the sole transaction identifier. See decision #1b for current schema.
+
+### 1b. Schema Normalization: transaction_information (2026-08-19)
+
+**Status:** Implemented (approved 2026-08-19)
+**Author:** McManus (Data Engineer)
+**Reviewers:** Hockney (Quality approval: 87/87 tests pass, ruff clean, wheel succeeds)
+**Summary:** Revised the transaction schema per user instruction: renamed `OriginalTransaction` to `TransactionInformation` and root-level field `original_transaction` to `transaction_information`. Removed nested `transaction_id` from `TransactionInformation`; root-level `transaction_id` is the sole identifier. `TransactionInformation` retains exactly 8 fields: `originator_name`, `origin_account`, `bank_origin`, `beneficiary_name`, `destination_account`, `bank_destination`, `amount`, `currency`. `extra="forbid"` preserved on all nested objects; no backwards-compatibility shims — old field name `original_transaction` is rejected by validation (422). Repository `update` method key updated from `original_transaction` to `transaction_information`.
+**Supersedes:** Decision #1 (Schema Extension)
+**Files:** `app/models.py`, `app/repository.py`, test fixtures, tests
+
+
 
 ### 2. Fix Hatchling package discovery for `app/` directory (2026-08-19)
 
