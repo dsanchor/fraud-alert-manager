@@ -2,7 +2,21 @@
 
 ## Active Decisions
 
-### 1. Fraud Alert API Contract (2026-08-19)
+### 1. Schema Extension: transaction_id + original_transaction (2026-08-19)
+
+**Status:** Implemented
+**Author:** McManus (Data Engineer)
+**Summary:** Added two new client-owned top-level fields: `transaction_id` (string) and `original_transaction` (nested object with 9 fields: transaction_id, originator_name, origin_account, bank_origin, beneficiary_name, destination_account, bank_destination, amount, currency). Bank/account identifiers preserve leading zeroes as strings. `OriginalTransaction` uses `extra="forbid"`. No constraint enforced that `FraudAlertCreate.transaction_id` must equal `original_transaction.transaction_id`. Fields exposed as optional in `FraudAlertUpdate` (shallow PATCH semantics).
+**Files:** `app/models.py`, `app/repository.py`
+
+### 2. Fix Hatchling package discovery for `app/` directory (2026-08-19)
+
+**Status:** Applied
+**Author:** Fenster (Backend Dev)
+**Summary:** GitHub Actions GHCR build failed with package discovery error (Hatchling looks for project-name-normalized directory; source lives in generic `app/`). Added explicit package declaration to `pyproject.toml`: `[tool.hatch.build.targets.wheel] packages = ["app"]`. Wheel now includes app package; uvicorn import and Dockerfile unchanged.
+**Files:** `pyproject.toml`
+
+### 3. Fraud Alert API Contract (2026-08-19)
 
 **Status:** Accepted (revised 2026-08-19 — schema corrected to user's supplied payload)
 **Author:** Keaton (Lead)
