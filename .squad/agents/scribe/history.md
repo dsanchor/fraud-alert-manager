@@ -12,6 +12,8 @@ Fraud Alert CRUD service: FastAPI + Pydantic + in-memory storage. User's nested 
 
 ## Recent Updates
 
+📌 **2026-08-19 — Docker containerization cycle:** Keaton implemented Dockerfile + workflow for GHCR. Hockney detected .dockerignore issue (README.md excluded but required). McManus fixed .dockerignore with `!README.md` exception. Hockney approved. Scribe wrote 4 orchestration logs (Keaton initial, Hockney rejection, McManus fix, Hockney approval).
+
 📌 **2026-08-19 — Post-sprint:** Scribe archived decisions, wrote orchestration logs for all agents (Keaton, McManus, Fenster, Hockney), recorded session log and health metrics.
 
 📌 **Team initialization:** Keaton (architecture + tooling), McManus (data models), Fenster (routes/app), Hockney (tests + review) deployed. All work completed per contract boundaries.
