@@ -1,0 +1,51 @@
+{
+  "overall_compliance": {
+    "overall_status": "NON_COMPLIANT",
+    "non_compliant_rule_count": 3,
+    "potential_gap_rule_count": 1,
+    "insufficient_data_rule_count": 2,
+    "not_applicable_rule_count": 4,
+    "compliant_rule_count": 10
+  },
+  "decision_support": {
+    "calculation_version": "v2.1.0",
+    "calculation_inputs": {
+      "highest_historical_context_level": 2,
+      "non_compliant_rule_count": 3,
+      "potential_gap_rule_count": 1,
+      "insufficient_data_rule_count": 2,
+      "not_applicable_rule_count": 4,
+      "compliant_rule_count": 10
+    },
+    "investigation_priority": {
+      "base_historical_context_score": 0.5,
+      "potential_gap_points": 1.0,
+      "insufficient_data_points": 0.5,
+      "non_compliance_points": 3.0,
+      "raw_score": 5.0,
+      "score": 4.5,
+      "maximum_score": 10.0,
+      "priority_band": "HIGH"
+    },
+    "workflow_classification": {
+      "final_verdict": "ESCALATE",
+      "matched_rule_id": "RULE-007",
+      "rationale": [
+        "Multiple non-compliant rules detected",
+        "Historical context indicates elevated risk"
+      ],
+      "meaning": "Case requires immediate escalation to senior compliance officer",
+      "is_legal_conclusion": false,
+      "establishes_money_laundering": false
+    }
+  },
+  "regulatory_interpretation": {
+    "summary": "Assessment indicates significant compliance gaps requiring immediate attention",
+    "key_findings": [
+      "Transaction pattern deviates from established baseline",
+      "Three rules flagged as non-compliant under AML directives",
+      "Insufficient data for two risk indicators"
+    ],
+    "regulatory_relevance": "Subject to AMLD5 Article 18 enhanced due diligence requirements"
+  }
+}
