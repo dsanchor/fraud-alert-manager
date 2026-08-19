@@ -72,6 +72,37 @@ def test_post_payload_round_trips(client, full_payload):
     assert body["regulatory_interpretation"] == full_payload["regulatory_interpretation"]
 
 
+def test_post_transaction_id_round_trips(client, full_payload):
+    """Top-level transaction_id is returned unchanged (string, leading chars preserved)."""
+    body = client.post("/api/v1/fraud-alerts", json=full_payload).json()
+    assert body["transaction_id"] == "TX-TEST-0001"
+
+
+def test_post_transaction_information_round_trips(client, full_payload):
+    """transaction_information block is returned byte-for-byte unchanged."""
+    body = client.post("/api/v1/fraud-alerts", json=full_payload).json()
+    ti = body["transaction_information"]
+    assert ti == full_payload["transaction_information"]
+
+
+def test_post_transaction_information_identifier_strings_preserved(client, full_payload):
+    """Identifier fields with leading zeros are preserved as strings, not coerced to numbers."""
+    body = client.post("/api/v1/fraud-alerts", json=full_payload).json()
+    ti = body["transaction_information"]
+    # origin_account starts with digit, bank_origin has leading zero, bank_destination
+    assert ti["origin_account"] == "83D4B1F30"
+    assert ti["bank_origin"] == "0121"        # leading zero must survive
+    assert ti["destination_account"] == "818CCA030"
+    assert ti["bank_destination"] == "29196"
+
+
+def test_post_transaction_information_amount_is_number(client, full_payload):
+    """amount must round-trip as a JSON number, not a string."""
+    body = client.post("/api/v1/fraud-alerts", json=full_payload).json()
+    assert body["transaction_information"]["amount"] == 15000
+    assert isinstance(body["transaction_information"]["amount"], (int, float))
+
+
 # ---------------------------------------------------------------------------
 # GET collection
 # ---------------------------------------------------------------------------

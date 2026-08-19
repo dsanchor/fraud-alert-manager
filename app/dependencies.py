@@ -1,9 +1,12 @@
 from __future__ import annotations
 
 from .repository import FraudAlertRepository
+from .seed_data import startup_alerts
 
 # Single process-level repository instance.
 _repository = FraudAlertRepository()
+for _alert_id, _payload in startup_alerts():
+    _repository.create(_alert_id, _payload)
 
 
 def get_repository() -> FraudAlertRepository:

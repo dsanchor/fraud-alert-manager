@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none';" />
+  <title>Fraud Alert Manager</title>
+  <link rel="stylesheet" href="/static/css/styles.css" />
+</head>
+<body>
+  <a href="#main" class="skip-link">Skip to main content</a>
+
+  <header class="app-header" role="banner">
+    <div class="header-inner">
+      <a href="#/alerts" class="brand" aria-label="Fraud Alert Manager — home">
+        <span class="brand-icon" aria-hidden="true">⚠</span>
+        <span class="brand-text">Fraud Alert Manager</span>
+      </a>
+      <nav class="main-nav" aria-label="Primary navigation">
+        <a href="#/alerts" class="nav-link" id="nav-alerts">Alerts</a>
+        <a href="#/alerts/new" class="nav-link" id="nav-new">New Alert</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" class="app-main" aria-live="polite" aria-busy="false"></main>
+
+  <div id="toast-region" class="toast-region" role="status" aria-live="polite" aria-atomic="true"></div>
+
+  <dialog id="confirm-dialog" class="confirm-dialog" aria-labelledby="dialog-title" aria-describedby="dialog-desc">
+    <div class="dialog-content">
+      <h2 id="dialog-title" class="dialog-title">Confirm Delete</h2>
+      <p id="dialog-desc" class="dialog-desc"></p>
+      <div class="dialog-actions">
+        <button id="dialog-cancel" class="btn btn-secondary">Cancel</button>
+        <button id="dialog-confirm" class="btn btn-danger">Delete</button>
+      </div>
+    </div>
+  </dialog>
+
+  <script type="module" src="/static/js/main.js"></script>
+</body>
+</html>

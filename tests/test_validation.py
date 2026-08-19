@@ -239,3 +239,132 @@ def test_post_cannot_set_created_at(client, full_payload):
     payload = copy.deepcopy(full_payload)
     payload["created_at"] = "2000-01-01T00:00:00Z"
     _assert_422(client.post(BASE, json=payload))
+
+
+# ---------------------------------------------------------------------------
+# Transaction extension — required fields
+# ---------------------------------------------------------------------------
+
+def test_post_missing_transaction_id(client, full_payload):
+    """Top-level transaction_id is required."""
+    payload = copy.deepcopy(full_payload)
+    del payload["transaction_id"]
+    _assert_422(client.post(BASE, json=payload))
+
+
+def test_post_missing_transaction_information(client, full_payload):
+    """transaction_information block is required."""
+    payload = copy.deepcopy(full_payload)
+    del payload["transaction_information"]
+    _assert_422(client.post(BASE, json=payload))
+
+
+def test_post_old_original_transaction_field_rejected(client, full_payload):
+    """Sending the old original_transaction key must be rejected (unknown field)."""
+    payload = copy.deepcopy(full_payload)
+    payload["original_transaction"] = payload["transaction_information"].copy()
+    detail = _assert_422(client.post(BASE, json=payload))
+    locs = [str(e.get("loc")) for e in detail]
+    assert any("original_transaction" in loc for loc in locs)
+
+
+def test_post_nested_transaction_id_rejected(client, full_payload):
+    """A transaction_id nested inside transaction_information must be rejected (extra=forbid)."""
+    payload = copy.deepcopy(full_payload)
+    payload["transaction_information"]["transaction_id"] = "TX-TEST-0001"
+    detail = _assert_422(client.post(BASE, json=payload))
+    locs = [str(e.get("loc")) for e in detail]
+    assert any("transaction_id" in loc for loc in locs)
+
+
+def test_post_missing_transaction_information_originator_name(client, full_payload):
+    payload = copy.deepcopy(full_payload)
+    del payload["transaction_information"]["originator_name"]
+    _assert_422(client.post(BASE, json=payload))
+
+
+def test_post_missing_transaction_information_origin_account(client, full_payload):
+    payload = copy.deepcopy(full_payload)
+    del payload["transaction_information"]["origin_account"]
+    _assert_422(client.post(BASE, json=payload))
+
+
+def test_post_missing_transaction_information_bank_origin(client, full_payload):
+    payload = copy.deepcopy(full_payload)
+    del payload["transaction_information"]["bank_origin"]
+    _assert_422(client.post(BASE, json=payload))
+
+
+def test_post_missing_transaction_information_beneficiary_name(client, full_payload):
+    payload = copy.deepcopy(full_payload)
+    del payload["transaction_information"]["beneficiary_name"]
+    _assert_422(client.post(BASE, json=payload))
+
+
+def test_post_missing_transaction_information_destination_account(client, full_payload):
+    payload = copy.deepcopy(full_payload)
+    del payload["transaction_information"]["destination_account"]
+    _assert_422(client.post(BASE, json=payload))
+
+
+def test_post_missing_transaction_information_bank_destination(client, full_payload):
+    payload = copy.deepcopy(full_payload)
+    del payload["transaction_information"]["bank_destination"]
+    _assert_422(client.post(BASE, json=payload))
+
+
+def test_post_missing_transaction_information_amount(client, full_payload):
+    payload = copy.deepcopy(full_payload)
+    del payload["transaction_information"]["amount"]
+    _assert_422(client.post(BASE, json=payload))
+
+
+def test_post_missing_transaction_information_currency(client, full_payload):
+    payload = copy.deepcopy(full_payload)
+    del payload["transaction_information"]["currency"]
+    _assert_422(client.post(BASE, json=payload))
+
+
+# ---------------------------------------------------------------------------
+# Transaction extension — type constraints
+# ---------------------------------------------------------------------------
+
+def test_post_transaction_information_amount_must_be_number(client, full_payload):
+    """amount must be a JSON number; a non-numeric string cannot be coerced and must be rejected.
+
+    Note: Pydantic v2 default mode coerces numeric strings (e.g. "15000") to float.
+    We use a non-numeric string to assert the field type is numeric, not free-form text.
+    """
+    payload = copy.deepcopy(full_payload)
+    payload["transaction_information"]["amount"] = "fifteen thousand"
+    _assert_422(client.post(BASE, json=payload))
+
+
+def test_post_transaction_information_amount_dict_rejected(client, full_payload):
+    payload = copy.deepcopy(full_payload)
+    payload["transaction_information"]["amount"] = {"value": 15000}
+    _assert_422(client.post(BASE, json=payload))
+
+
+# ---------------------------------------------------------------------------
+# Transaction extension — identifier fields stay strings
+# ---------------------------------------------------------------------------
+
+def test_post_transaction_information_bank_origin_integer_rejected(client, full_payload):
+    """bank_origin must be a string so leading zeros are preserved; integer rejected."""
+    payload = copy.deepcopy(full_payload)
+    payload["transaction_information"]["bank_origin"] = 121  # loses leading zero
+    _assert_422(client.post(BASE, json=payload))
+
+
+# ---------------------------------------------------------------------------
+# Transaction extension — extra="forbid" on transaction_information
+# ---------------------------------------------------------------------------
+
+def test_post_unknown_nested_field_in_transaction_information(client, full_payload):
+    """Unknown fields inside transaction_information must be rejected."""
+    payload = copy.deepcopy(full_payload)
+    payload["transaction_information"]["ghost_field"] = "unexpected"
+    detail = _assert_422(client.post(BASE, json=payload))
+    locs = [str(e.get("loc")) for e in detail]
+    assert any("ghost_field" in loc for loc in locs)

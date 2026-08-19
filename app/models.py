@@ -71,11 +71,28 @@ class RegulatoryInterpretation(BaseModel):
     regulatory_relevance: str
 
 
+class TransactionInformation(BaseModel):
+    """Client-owned record of the payment transaction under review."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    originator_name: str
+    origin_account: str
+    bank_origin: str
+    beneficiary_name: str
+    destination_account: str
+    bank_destination: str
+    amount: float
+    currency: str
+
+
 class FraudAlertCreate(BaseModel):
     """Client-supplied payload for POST and PUT (full replace)."""
 
     model_config = ConfigDict(extra="forbid")
 
+    transaction_id: str
+    transaction_information: TransactionInformation
     overall_compliance: OverallCompliance
     decision_support: DecisionSupport
     regulatory_interpretation: RegulatoryInterpretation
@@ -89,6 +106,8 @@ class FraudAlertUpdate(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
 
+    transaction_id: str | None = None
+    transaction_information: TransactionInformation | None = None
     overall_compliance: OverallCompliance | None = None
     decision_support: DecisionSupport | None = None
     regulatory_interpretation: RegulatoryInterpretation | None = None
@@ -104,6 +123,8 @@ class FraudAlert(BaseModel):
     updated_at: datetime
     version: int
 
+    transaction_id: str
+    transaction_information: TransactionInformation
     overall_compliance: OverallCompliance
     decision_support: DecisionSupport
     regulatory_interpretation: RegulatoryInterpretation

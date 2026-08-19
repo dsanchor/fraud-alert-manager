@@ -1,4 +1,15 @@
 {
+  "transaction_id": "TX-TEST-0001",
+  "transaction_information": {
+    "originator_name": "James Carter",
+    "origin_account": "83D4B1F30",
+    "bank_origin": "0121",
+    "beneficiary_name": "Emily Foster",
+    "destination_account": "818CCA030",
+    "bank_destination": "29196",
+    "amount": 15000,
+    "currency": "EUR"
+  },
   "overall_compliance": {
     "overall_status": "NON_COMPLIANT",
     "non_compliant_rule_count": 3,

@@ -1,0 +1,53 @@
+{
+  "agents": {
+    "lead": {
+      "persistent_name": "Keaton",
+      "universe": "The Usual Suspects",
+      "created_at": "2026-08-19T13:21:28.482+02:00",
+      "legacy_named": false,
+      "status": "active"
+    },
+    "backend-dev": {
+      "persistent_name": "Fenster",
+      "universe": "The Usual Suspects",
+      "created_at": "2026-08-19T13:21:28.482+02:00",
+      "legacy_named": false,
+      "status": "active"
+    },
+    "data-engineer": {
+      "persistent_name": "McManus",
+      "universe": "The Usual Suspects",
+      "created_at": "2026-08-19T13:21:28.482+02:00",
+      "legacy_named": false,
+      "status": "active"
+    },
+    "tester": {
+      "persistent_name": "Hockney",
+      "universe": "The Usual Suspects",
+      "created_at": "2026-08-19T13:21:28.482+02:00",
+      "legacy_named": false,
+      "status": "active"
+    },
+    "frontend-dev": {
+      "persistent_name": "Kujan",
+      "universe": "The Usual Suspects",
+      "created_at": "2026-08-19T15:08:57.241+02:00",
+      "legacy_named": false,
+      "status": "active"
+    },
+    "scribe": {
+      "persistent_name": "Scribe",
+      "universe": null,
+      "created_at": "2026-08-19T13:21:28.482+02:00",
+      "legacy_named": false,
+      "status": "active"
+    },
+    "ralph": {
+      "persistent_name": "Ralph",
+      "universe": null,
+      "created_at": "2026-08-19T13:21:28.482+02:00",
+      "legacy_named": false,
+      "status": "active"
+    }
+  }
+}

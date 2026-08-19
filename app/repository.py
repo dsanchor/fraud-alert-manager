@@ -63,6 +63,8 @@ class FraudAlertRepository:
                 created_at=existing.created_at,
                 updated_at=_utcnow(),
                 version=existing.version + 1,
+                transaction_id=data["transaction_id"],
+                transaction_information=data["transaction_information"],
                 overall_compliance=data["overall_compliance"],
                 decision_support=data["decision_support"],
                 regulatory_interpretation=data["regulatory_interpretation"],
