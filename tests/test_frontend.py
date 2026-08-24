@@ -21,6 +21,8 @@ from pathlib import Path
 import pytest
 from fastapi.testclient import TestClient
 
+from app.main import _public_base_url
+
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
@@ -248,6 +250,28 @@ class TestBackendRoutesUnchanged:
         # must be parseable JSON
         data = resp.json()
         assert "openapi" in data or "paths" in data
+
+    def test_public_base_url_uses_stable_container_app_hostname(self, monkeypatch):
+        monkeypatch.delenv("PUBLIC_BASE_URL", raising=False)
+        monkeypatch.setenv("CONTAINER_APP_NAME", "fraud-alert-manager")
+        monkeypatch.setenv(
+            "CONTAINER_APP_ENV_DNS_SUFFIX",
+            "proudfield-742d4db1.swedencentral.azurecontainerapps.io",
+        )
+        monkeypatch.setenv(
+            "CONTAINER_APP_HOSTNAME",
+            "fraud-alert-manager--0000002.proudfield-742d4db1.swedencentral.azurecontainerapps.io",
+        )
+
+        assert _public_base_url() == (
+            "https://fraud-alert-manager."
+            "proudfield-742d4db1.swedencentral.azurecontainerapps.io"
+        )
+
+    def test_public_base_url_allows_explicit_override(self, monkeypatch):
+        monkeypatch.setenv("PUBLIC_BASE_URL", "https://alerts.example.com/")
+
+        assert _public_base_url() == "https://alerts.example.com"
 
     def test_openapi_excludes_root_path(self, client: TestClient):
         """/ must have include_in_schema=False (architecture §3.2 rule 3)."""

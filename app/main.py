@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 from pathlib import Path
 
 from fastapi import FastAPI
@@ -8,7 +9,30 @@ from fastapi.staticfiles import StaticFiles
 
 from .routes import router
 
-app = FastAPI(title="Fraud Alert Manager", version="1.0.0")
+
+def _public_base_url() -> str | None:
+    configured_url = os.getenv("PUBLIC_BASE_URL")
+    if configured_url:
+        return configured_url.rstrip("/")
+
+    app_name = os.getenv("CONTAINER_APP_NAME")
+    dns_suffix = os.getenv("CONTAINER_APP_ENV_DNS_SUFFIX")
+    if app_name and dns_suffix:
+        return f"https://{app_name}.{dns_suffix}"
+
+    revision_hostname = os.getenv("CONTAINER_APP_HOSTNAME")
+    if revision_hostname:
+        return f"https://{revision_hostname}"
+
+    return None
+
+
+public_base_url = _public_base_url()
+app = FastAPI(
+    title="Fraud Alert Manager",
+    version="1.0.0",
+    servers=[{"url": public_base_url}] if public_base_url else None,
+)
 
 app.include_router(router)
 
