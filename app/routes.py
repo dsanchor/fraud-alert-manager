@@ -18,7 +18,7 @@ class AlertListResponse:
     """Not a Pydantic model — built inline to keep the response shape explicit."""
 
 
-@router.post("", status_code=201, response_model=FraudAlert)
+@router.post("", status_code=201, response_model=FraudAlert, operation_id="create_alert")
 def create_alert(
     payload: FraudAlertCreate,
     request: Request,
@@ -31,7 +31,7 @@ def create_alert(
     return alert
 
 
-@router.get("", response_model=dict)
+@router.get("", response_model=dict, operation_id="list_alerts")
 def list_alerts(
     repo: Repo,
     limit: Annotated[int, Query(ge=1, le=200)] = 50,
@@ -46,7 +46,9 @@ def list_alerts(
     }
 
 
-@router.get("/{alert_id}", response_model=FraudAlert, name="get_alert")
+@router.get(
+    "/{alert_id}", response_model=FraudAlert, name="get_alert", operation_id="get_alert"
+)
 def get_alert(alert_id: str, repo: Repo) -> FraudAlert:
     alert = repo.get(alert_id)
     if alert is None:
@@ -54,7 +56,7 @@ def get_alert(alert_id: str, repo: Repo) -> FraudAlert:
     return alert
 
 
-@router.put("/{alert_id}", response_model=FraudAlert)
+@router.put("/{alert_id}", response_model=FraudAlert, operation_id="replace_alert")
 def replace_alert(alert_id: str, payload: FraudAlertCreate, repo: Repo) -> FraudAlert:
     alert = repo.replace(alert_id, payload)
     if alert is None:
@@ -62,7 +64,7 @@ def replace_alert(alert_id: str, payload: FraudAlertCreate, repo: Repo) -> Fraud
     return alert
 
 
-@router.patch("/{alert_id}", response_model=FraudAlert)
+@router.patch("/{alert_id}", response_model=FraudAlert, operation_id="patch_alert")
 def patch_alert(alert_id: str, payload: FraudAlertUpdate, repo: Repo) -> FraudAlert:
     alert = repo.update(alert_id, payload)
     if alert is None:
@@ -70,7 +72,7 @@ def patch_alert(alert_id: str, payload: FraudAlertUpdate, repo: Repo) -> FraudAl
     return alert
 
 
-@router.delete("/{alert_id}", status_code=204)
+@router.delete("/{alert_id}", status_code=204, operation_id="delete_alert")
 def delete_alert(alert_id: str, repo: Repo) -> None:
     found = repo.delete(alert_id)
     if not found:

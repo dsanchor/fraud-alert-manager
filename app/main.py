@@ -37,7 +37,7 @@ app = FastAPI(
 app.include_router(router)
 
 
-@app.get("/health", tags=["health"])
+@app.get("/health", tags=["health"], operation_id="health")
 def health() -> dict:
     return {"status": "ok"}
 
